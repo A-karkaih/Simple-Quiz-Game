@@ -14,65 +14,37 @@ const restartButton = document.getElementById("restart-btn");
 const progressBar = document.getElementById("progress");
 
 // Array of object (Array of Quiz Questions )
-const quizQuestions = [
-  {
-    question: "What is the capital of France?",
-    answers: [
-      { text: "London", correct: false },
-      { text: "Berlin", correct: false },
-      { text: "Paris", correct: true },
-      { text: "Madrid", correct: false },
-    ],
-  },
-  {
-    question: "Which planet is known as the Red Planet?",
-    answers: [
-      { text: "Venus", correct: false },
-      { text: "Mars", correct: true },
-      { text: "Jupiter", correct: false },
-      { text: "Saturn", correct: false },
-    ],
-  },
-  {
-    question: "What is the largest ocean on Earth?",
-    answers: [
-      { text: "Atlantic Ocean", correct: false },
-      { text: "Indian Ocean", correct: false },
-      { text: "Arctic Ocean", correct: false },
-      { text: "Pacific Ocean", correct: true },
-    ],
-  },
-  {
-    question: "Which of these is NOT a programming language?",
-    answers: [
-      { text: "Java", correct: false },
-      { text: "Python", correct: false },
-      { text: "Banana", correct: true },
-      { text: "JavaScript", correct: false },
-    ],
-  },
-  {
-    question: "What is the chemical symbol for gold?",
-    answers: [
-      { text: "Go", correct: false },
-      { text: "Gd", correct: false },
-      { text: "Au", correct: true },
-      { text: "Ag", correct: false },
-    ],
-  },
-];
+let quizQuestions;
+async function fetchData() {
+  const response = await fetch("questions.json");
+  const data = await response.json();
+  console.log(data);
 
+  quizQuestions = data;
+}
+
+async function initQuiz() {
+  await fetchData();
+
+  totalQuestionsSpan.textContent = quizQuestions.length;
+  maxScoreSpan.textContent = quizQuestions.length;
+}
+
+initQuiz();
 // Quiz State vars
 let currentQuestionIndex = 0;
 let score = 0;
 let answersDisabled = false;
 
-totalQuestionsSpan.textContent = quizQuestions.length;
-maxScoreSpan.textContent = quizQuestions.length;
-
 // Event listeners
 
-startButton.addEventListener("click", startQuiz);
+startButton.addEventListener("click", () => {
+  if (!quizQuestions) {
+    alert("Loading questions... please wait!");
+    return;
+  }
+  startQuiz();
+});
 restartButton.addEventListener("click", restartQuiz);
 // Start the Quiz
 function startQuiz() {
